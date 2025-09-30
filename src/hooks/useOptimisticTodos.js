@@ -19,18 +19,6 @@ export const useOptimisticTodos = () => {
 
   // Optimistic create todo
   const createTodoOptimistic = useCallback(async (todoData) => {
-    const tempId = `temp_${Date.now()}`;
-    const optimisticTodo = {
-      id: tempId,
-      ...todoData,
-      completed: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Immediate UI update
-    dispatch(optimisticAddTodo(optimisticTodo));
-
     try {
       const result = await dispatch(createTodo(todoData)).unwrap();
       return result;
@@ -98,7 +86,7 @@ export const useOptimisticTodos = () => {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
 
-    const updates = { completed: !todo.completed };
+    const updates = {...todo, completed: !todo.completed };
     return updateTodoOptimistic(id, updates);
   }, [updateTodoOptimistic, todos]);
 

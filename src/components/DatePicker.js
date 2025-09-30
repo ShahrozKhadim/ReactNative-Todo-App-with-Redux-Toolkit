@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { format } from 'date-fns';
 import { colors, responsive } from '../utils';
@@ -28,13 +30,16 @@ const DatePicker = ({
   errorStyle,
 }) => {
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDateChange = (event, selectedDate) => {
-    setShowPicker(Platform.OS === 'ios');
+    if (Platform.OS === 'android' && event.type === 'dismissed') {
+      setShowPicker(false);
+      return;
+    }
 
     if (selectedDate) {
-      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-      onChange(formattedDate);
+      setSelectedDate(selectedDate);
     }
   };
 
@@ -42,6 +47,20 @@ const DatePicker = ({
     if (!disabled) {
       setShowPicker(true);
     }
+  };
+
+  const handleCancel = () => {
+    setShowPicker(false);
+    setSelectedDate(null);
+  };
+
+  const handleDone = () => {
+    if (selectedDate) {
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      onChange(formattedDate);
+    }
+    setShowPicker(false);
+    setSelectedDate(null);
   };
 
   const formatDisplayDate = (dateString) => {
@@ -113,14 +132,38 @@ const DatePicker = ({
       )}
 
       {showPicker && (
-        <DateTimePicker
-          value={value ? new Date(value) : new Date()}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleDateChange}
-          minimumDate={minimumDate}
-          maximumDate={maximumDate}
-        />
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={showPicker}
+          onRequestClose={handleCancel}
+        >
+          <TouchableWithoutFeedback onPress={handleCancel}>
+            <View style={styles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={styles.modalContent}>
+                  <View style={styles.modalHeader}>
+                    <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
+                      <Text style={styles.cancelText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.modalTitle}>Select Date</Text>
+                    <TouchableOpacity onPress={handleDone} style={styles.doneButton}>
+                      <Text style={styles.doneText}>Done</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <DateTimePicker
+                    value={selectedDate || (value ? new Date(value) : new Date())}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleDateChange}
+                    minimumDate={minimumDate}
+                    maximumDate={maximumDate}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       )}
     </View>
   );
@@ -170,6 +213,56 @@ const styles = StyleSheet.create({
   error: {
     fontSize: responsive.fontSize.xs,
     marginTop: responsive.margin.xs,
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+
+  modalContent: {
+    backgroundColor: colors.white,
+    borderTopLeftRadius: responsive.borderRadius.lg,
+    borderTopRightRadius: responsive.borderRadius.lg,
+    paddingBottom: 34, // Safe area for iPhone
+  },
+
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: responsive.padding.lg,
+    paddingVertical: responsive.padding.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+
+  cancelButton: {
+    paddingVertical: responsive.padding.sm,
+  },
+
+  cancelText: {
+    fontSize: responsive.fontSize.md,
+    color: colors.primary,
+    fontWeight: '500',
+  },
+
+  modalTitle: {
+    fontSize: responsive.fontSize.lg,
+    fontWeight: '600',
+    color: colors.textPrimary,
+  },
+
+  doneButton: {
+    paddingVertical: responsive.padding.sm,
+  },
+
+  doneText: {
+    fontSize: responsive.fontSize.md,
+    color: colors.primary,
+    fontWeight: '600',
   },
 });
 

@@ -20,31 +20,9 @@ const createTodo = createAsyncThunk(
   async (todoData, { dispatch, rejectWithValue }) => {
     // Generate temporary ID for optimistic update
     const tempId = `temp_${Date.now()}`;
-    const optimisticTodo = {
-      id: tempId,
-      ...todoData,
-      completed: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Optimistic update - add to store immediately
-    dispatch(addTodo(optimisticTodo));
-
     try {
       const response = await todoApi.createTodo(todoData);
       const serverTodo = response.data;
-
-      // Replace optimistic todo with server response
-      dispatch(
-        updateTodo({
-          id: tempId,
-          updates: {
-            ...serverTodo,
-            id: serverTodo.id,
-          },
-        }),
-      );
 
       return serverTodo;
     } catch (error) {

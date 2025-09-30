@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { colors, responsive } from '../utils';
@@ -25,15 +27,20 @@ const TimePicker = ({
   errorStyle,
 }) => {
   const [showPicker, setShowPicker] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(null);
 
   const handleTimeChange = (event, selectedTime) => {
-    setShowPicker(Platform.OS === 'ios');
+    // Don't close picker immediately - let user confirm with Done/Cancel
+    // Only close on Android when user dismisses
+    if (Platform.OS === 'android' && event.type === 'dismissed') {
+      setShowPicker(false);
+      return;
+    }
 
+    // Store the selected time but don't apply it yet
     if (selectedTime) {
-      const hours = selectedTime.getHours().toString().padStart(2, '0');
-      const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
-      const timeString = `${hours}:${minutes}`;
-      onChange(timeString);
+      // We'll apply the change when user taps Done
+      setSelectedTime(selectedTime);
     }
   };
 
@@ -41,6 +48,22 @@ const TimePicker = ({
     if (!disabled) {
       setShowPicker(true);
     }
+  };
+
+  const handleCancel = () => {
+    setShowPicker(false);
+    setSelectedTime(null); // Reset selected time
+  };
+
+  const handleDone = () => {
+    if (selectedTime) {
+      const hours = selectedTime.getHours().toString().padStart(2, '0');
+      const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
+      const timeString = `${hours}:${minutes}`;
+      onChange(timeString);
+    }
+    setShowPicker(false);
+    setSelectedTime(null);
   };
 
   const formatDisplayTime = (timeString) => {
@@ -86,6 +109,9 @@ const TimePicker = ({
   };
 
   const getPickerValue = () => {
+    if (selectedTime) {
+      return selectedTime;
+    }
     if (value) {
       const [hours, minutes] = value.split(':');
       const date = new Date();
@@ -130,13 +156,37 @@ const TimePicker = ({
       )}
 
       {showPicker && (
-        <DateTimePicker
-          value={getPickerValue()}
-          mode="time"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleTimeChange}
-          is24Hour={false}
-        />
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={showPicker}
+          onRequestClose={handleCancel}
+        >
+          <TouchableWithoutFeedback onPress={handleCancel}>
+            <View style={styles.modalOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={styles.modalContent}>
+                  <View style={styles.modalHeader}>
+                    <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
+                      <Text style={styles.cancelText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.modalTitle}>Select Time</Text>
+                    <TouchableOpacity onPress={handleDone} style={styles.doneButton}>
+                      <Text style={styles.doneText}>Done</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <DateTimePicker
+                    value={getPickerValue()}
+                    mode="time"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={handleTimeChange}
+                    is24Hour={false}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       )}
     </View>
   );
@@ -186,6 +236,56 @@ const styles = StyleSheet.create({
   error: {
     fontSize: responsive.fontSize.xs,
     marginTop: responsive.margin.xs,
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+
+  modalContent: {
+    backgroundColor: colors.white,
+    borderTopLeftRadius: responsive.borderRadius.lg,
+    borderTopRightRadius: responsive.borderRadius.lg,
+    paddingBottom: 34, // Safe area for iPhone
+  },
+
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: responsive.padding.lg,
+    paddingVertical: responsive.padding.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+
+  cancelButton: {
+    paddingVertical: responsive.padding.sm,
+  },
+
+  cancelText: {
+    fontSize: responsive.fontSize.md,
+    color: colors.primary,
+    fontWeight: '500',
+  },
+
+  modalTitle: {
+    fontSize: responsive.fontSize.lg,
+    fontWeight: '600',
+    color: colors.textPrimary,
+  },
+
+  doneButton: {
+    paddingVertical: responsive.padding.sm,
+  },
+
+  doneText: {
+    fontSize: responsive.fontSize.md,
+    color: colors.primary,
+    fontWeight: '600',
   },
 });
 

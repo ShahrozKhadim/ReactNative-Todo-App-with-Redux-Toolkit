@@ -15,7 +15,7 @@ import EmptyState from '../../../components/EmptyState';
 import Button from '../../../components/Button';
 import AdvancedFilter from '../../../components/AdvancedFilter';
 import { colors, responsive } from '../../../utils';
-import { applyAllFilters } from '../../../utils/filterUtils';
+import { applyAllFilters } from '../../../utils';
 
 /**
  * TodoListScreen - Main screen displaying all todos

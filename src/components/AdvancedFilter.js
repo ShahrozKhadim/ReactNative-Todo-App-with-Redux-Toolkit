@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -42,6 +42,9 @@ const AdvancedFilter = ({ visible, onClose }) => {
   const customTimeStart = todosState?.customTimeRange?.start || null;
   const customTimeEnd = todosState?.customTimeRange?.end || null;
 
+  // Local search state for debounced search
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+
   const dateFilterOptions = [
     { value: 'all', label: 'All Dates' },
     { value: 'today', label: 'Today' },
@@ -78,13 +81,23 @@ const AdvancedFilter = ({ visible, onClose }) => {
 
   const handleClearFilters = () => {
     dispatch(clearAllFilters());
+    setLocalSearchQuery('');
     onClose();
   };
 
   // Callback functions to avoid inline functions
+  // Handle search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(searchTodos(localSearchQuery));
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localSearchQuery, dispatch]);
+
   const handleSearchChange = useCallback((text) => {
-    dispatch(searchTodos(text));
-  }, [dispatch]);
+    setLocalSearchQuery(text);
+  }, []);
 
   const handleDateFilterChange = useCallback((value) => {
     dispatch(filterByDate(value));
@@ -174,7 +187,7 @@ const AdvancedFilter = ({ visible, onClose }) => {
             <TextInput
               style={styles.searchInput}
               placeholder="Search by name or description..."
-              value={searchQuery}
+              value={localSearchQuery}
               onChangeText={handleSearchChange}
               multiline={false}
             />

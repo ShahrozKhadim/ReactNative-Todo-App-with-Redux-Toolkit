@@ -5,7 +5,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
@@ -69,7 +68,6 @@ const AddTodoScreen = () => {
       navigation.goBack();
         } catch (error) {
           setSubmitting(false);
-          // Silent error handling - no user alerts
         }
   };
 
