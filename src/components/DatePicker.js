@@ -5,12 +5,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-  Modal,
-  TouchableWithoutFeedback,
 } from 'react-native';
 import { format } from 'date-fns';
 import { colors, responsive } from '../utils';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import PickerModal from './PickerModal';
 
 /**
  * DatePicker component for selecting dates
@@ -131,40 +130,21 @@ const DatePicker = ({
         </Text>
       )}
 
-      {showPicker && (
-        <Modal
-          transparent={true}
-          animationType="slide"
-          visible={showPicker}
-          onRequestClose={handleCancel}
-        >
-          <TouchableWithoutFeedback onPress={handleCancel}>
-            <View style={styles.modalOverlay}>
-              <TouchableWithoutFeedback>
-                <View style={styles.modalContent}>
-                  <View style={styles.modalHeader}>
-                    <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
-                      <Text style={styles.cancelText}>Cancel</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.modalTitle}>Select Date</Text>
-                    <TouchableOpacity onPress={handleDone} style={styles.doneButton}>
-                      <Text style={styles.doneText}>Done</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <DateTimePicker
-                    value={selectedDate || (value ? new Date(value) : new Date())}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onChange={handleDateChange}
-                    minimumDate={minimumDate}
-                    maximumDate={maximumDate}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-      )}
+      <PickerModal
+        visible={showPicker}
+        onClose={handleCancel}
+        onDone={handleDone}
+        title="Select Date"
+      >
+        <DateTimePicker
+          value={selectedDate || (value ? new Date(value) : new Date())}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleDateChange}
+          minimumDate={minimumDate}
+          maximumDate={maximumDate}
+        />
+      </PickerModal>
     </View>
   );
 };
@@ -213,56 +193,6 @@ const styles = StyleSheet.create({
   error: {
     fontSize: responsive.fontSize.xs,
     marginTop: responsive.margin.xs,
-  },
-
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-
-  modalContent: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: responsive.borderRadius.lg,
-    borderTopRightRadius: responsive.borderRadius.lg,
-    paddingBottom: 34, // Safe area for iPhone
-  },
-
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: responsive.padding.lg,
-    paddingVertical: responsive.padding.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-
-  cancelButton: {
-    paddingVertical: responsive.padding.sm,
-  },
-
-  cancelText: {
-    fontSize: responsive.fontSize.md,
-    color: colors.primary,
-    fontWeight: '500',
-  },
-
-  modalTitle: {
-    fontSize: responsive.fontSize.lg,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-
-  doneButton: {
-    paddingVertical: responsive.padding.sm,
-  },
-
-  doneText: {
-    fontSize: responsive.fontSize.md,
-    color: colors.primary,
-    fontWeight: '600',
   },
 });
 
