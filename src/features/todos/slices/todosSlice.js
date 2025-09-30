@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { todoApi } from '../services/todoApi';
 import { DUMMY_TODOS } from '../../../data/dummyTodos';
 
-// API async thunks with optimistic updates for better UX
 const fetchTodos = createAsyncThunk(
   'todos/fetchTodos',
   async (_, { rejectWithValue }) => {
@@ -18,7 +17,7 @@ const fetchTodos = createAsyncThunk(
 const createTodo = createAsyncThunk(
   'todos/createTodo',
   async (todoData, { dispatch, rejectWithValue }) => {
-    // Generate temporary ID for optimistic update
+    // Generate temporary ID
     const tempId = `temp_${Date.now()}`;
     try {
       const response = await todoApi.createTodo(todoData);
@@ -40,19 +39,12 @@ const updateTodoApi = createAsyncThunk(
     const state = getState();
     const originalTodo = state.todos.todos.find(todo => todo.id === id);
 
-    // Optimistic update - update store immediately
-    dispatch(updateTodo({ id, updates: todoData }));
-
     try {
       const response = await todoApi.updateTodo(id, todoData);
       const serverTodo = response.data;
 
-      // Update with server response
-      dispatch(updateTodo({ id, updates: serverTodo }));
-
       return serverTodo;
     } catch (error) {
-      // Rollback optimistic update on failure
       if (originalTodo) {
         dispatch(updateTodo({ id, updates: originalTodo }));
       }
@@ -68,14 +60,9 @@ const deleteTodoApi = createAsyncThunk(
     const state = getState();
     const originalTodo = state.todos.todos.find(todo => todo.id === id);
 
-    // Optimistic update - remove from store immediately
-    dispatch(deleteTodo(id));
-
     try {
-      await todoApi.deleteTodo(id);
       return id;
     } catch (error) {
-      // Rollback optimistic update on failure
       if (originalTodo) {
         dispatch(addTodo(originalTodo));
       }
@@ -112,7 +99,6 @@ const todosSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-    // Add a new todo locally
     addTodo: (state, action) => {
       const newTodo = {
         id: Date.now().toString(),
@@ -124,7 +110,6 @@ const todosSlice = createSlice({
       state.todos.unshift(newTodo);
     },
 
-    // Update a todo locally
     updateTodo: (state, action) => {
       const { id, updates } = action.payload;
       const todoIndex = state.todos.findIndex(todo => todo.id === id);
@@ -137,12 +122,10 @@ const todosSlice = createSlice({
       }
     },
 
-    // Delete a todo locally
     deleteTodo: (state, action) => {
       state.todos = state.todos.filter(todo => todo.id !== action.payload);
     },
 
-    // Toggle todo completion status
     toggleTodo: (state, action) => {
       const todo = state.todos.find(todo => todo.id === action.payload);
       if (todo) {
@@ -151,7 +134,6 @@ const todosSlice = createSlice({
       }
     },
 
-    // Sort todos
     sortTodos: (state, action) => {
       const { sortBy, sortOrder } = action.payload;
       state.sortBy = sortBy;
@@ -184,17 +166,14 @@ const todosSlice = createSlice({
       });
     },
 
-    // Filter todos
     filterTodos: (state, action) => {
       state.filterBy = action.payload;
     },
 
-    // Search todos
     searchTodos: (state, action) => {
       state.searchQuery = action.payload;
     },
 
-    // Enhanced filtering
     filterByDate: (state, action) => {
       state.dateFilter = action.payload;
     },
@@ -211,14 +190,12 @@ const todosSlice = createSlice({
       state.customTimeRange = action.payload;
     },
 
-    // Enhanced sorting
     sortByTime: (state, action) => {
       const { sortBy, sortOrder } = action.payload;
       state.sortBy = sortBy;
       state.sortOrder = sortOrder;
     },
 
-    // Clear all filters
     clearAllFilters: state => {
       state.searchQuery = '';
       state.dateFilter = 'all';
@@ -232,7 +209,6 @@ const todosSlice = createSlice({
       }
     },
 
-    // Pagination actions
     setPageSize: (state, action) => {
       if (!state.pagination) {
         state.pagination = {
@@ -326,7 +302,6 @@ const todosSlice = createSlice({
       state.pagination.hasPreviousPage = hasPreviousPage;
     },
 
-    // Optimistic update actions
     optimisticAddTodo: (state, action) => {
       const newTodo = {
         id: action.payload.id,
@@ -359,11 +334,9 @@ const todosSlice = createSlice({
 
       switch (operation) {
         case 'create':
-          // Remove the optimistic todo
           state.todos = state.todos.filter(todo => todo.id !== originalData.id);
           break;
         case 'update':
-          // Restore original todo
           const updateIndex = state.todos.findIndex(
             todo => todo.id === originalData.id,
           );
@@ -372,13 +345,11 @@ const todosSlice = createSlice({
           }
           break;
         case 'delete':
-          // Restore deleted todo
           state.todos.unshift(originalData);
           break;
       }
     },
 
-    // Clear error
     clearError: state => {
       state.error = null;
     },

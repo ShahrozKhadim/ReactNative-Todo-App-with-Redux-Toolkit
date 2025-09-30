@@ -4,7 +4,6 @@ import {
   createTodo,
   updateTodoApi,
   deleteTodoApi,
-  optimisticAddTodo,
   optimisticUpdateTodo,
   optimisticDeleteTodo,
 } from '../features/todos/slices/todosSlice';
@@ -17,13 +16,11 @@ export const useOptimisticTodos = () => {
   const dispatch = useDispatch();
   const { todos, loading, error } = useSelector((state) => state.todos);
 
-  // Optimistic create todo
   const createTodoOptimistic = useCallback(async (todoData) => {
     try {
       const result = await dispatch(createTodo(todoData)).unwrap();
       return result;
     } catch (error) {
-      // Silent error handling
       console.log('Create todo failed silently:', error.message);
       // dispatch(rollbackOptimisticUpdate({
       //   operation: 'create',
@@ -33,10 +30,7 @@ export const useOptimisticTodos = () => {
     }
   }, [dispatch]);
 
-  // Optimistic update todo
   const updateTodoOptimistic = useCallback(async (id, updates) => {
-    // Store original for rollback
-    const originalTodo = todos.find(todo => todo.id === id);
 
     // Immediate UI update
     dispatch(optimisticUpdateTodo({ id, updates }));
@@ -45,7 +39,6 @@ export const useOptimisticTodos = () => {
       const result = await dispatch(updateTodoApi({ id, todoData: updates })).unwrap();
       return result;
     } catch (error) {
-      // Silent error handling
       console.log('Update todo failed silently:', error.message);
       // if (originalTodo) {
       //   dispatch(rollbackOptimisticUpdate({
@@ -57,11 +50,7 @@ export const useOptimisticTodos = () => {
     }
   }, [dispatch, todos]);
 
-  // Optimistic delete todo
   const deleteTodoOptimistic = useCallback(async (id) => {
-    // Store original for rollback
-    const originalTodo = todos.find(todo => todo.id === id);
-
     // Immediate UI update
     dispatch(optimisticDeleteTodo(id));
 
@@ -69,7 +58,6 @@ export const useOptimisticTodos = () => {
       const result = await dispatch(deleteTodoApi(id)).unwrap();
       return result;
     } catch (error) {
-      // Silent error handling
       console.log('Delete todo failed silently:', error.message);
       // if (originalTodo) {
       //   dispatch(rollbackOptimisticUpdate({
@@ -81,7 +69,6 @@ export const useOptimisticTodos = () => {
     }
   }, [dispatch, todos]);
 
-  // Toggle completion with optimistic update
   const toggleTodoOptimistic = useCallback(async (id) => {
     const todo = todos.find(t => t.id === id);
     if (!todo) return;
