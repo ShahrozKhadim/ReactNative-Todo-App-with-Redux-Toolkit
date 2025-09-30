@@ -17,7 +17,7 @@ import {
   setCustomTimeRange,
   sortByTime,
   clearAllFilters
-} from '../features/todos/slices/todosSlice';
+} from '../features/filters';
 import Button from './Button';
 import DatePicker from './DatePicker';
 import TimePicker from './TimePicker';
@@ -36,18 +36,18 @@ import {
  */
 const AdvancedFilter = ({ visible, onClose }) => {
   const dispatch = useDispatch();
-  const todosState = useSelector((state) => state.todos);
+  const filtersState = useSelector((state) => state.filters);
 
-  // Use Redux state directly with safe defaults
-  const searchQuery = todosState?.searchQuery || '';
-  const dateFilter = todosState?.dateFilter || 'all';
-  const timeFilter = todosState?.timeFilter || 'all';
-  const sortBy = todosState?.sortBy || 'createdAt';
-  const sortOrder = todosState?.sortOrder || 'desc';
-  const customDateStart = todosState?.customDateRange?.start || null;
-  const customDateEnd = todosState?.customDateRange?.end || null;
-  const customTimeStart = todosState?.customTimeRange?.start || null;
-  const customTimeEnd = todosState?.customTimeRange?.end || null;
+  // Use filters state with safe defaults
+  const searchQuery = filtersState?.searchQuery || '';
+  const dateFilter = filtersState?.dateFilter || 'all';
+  const timeFilter = filtersState?.timeFilter || 'all';
+  const sortBy = filtersState?.sortBy || 'createdAt';
+  const sortOrder = filtersState?.sortOrder || 'desc';
+  const customDateStart = filtersState?.customDateRange?.start || null;
+  const customDateEnd = filtersState?.customDateRange?.end || null;
+  const customTimeStart = filtersState?.customTimeRange?.start || null;
+  const customTimeEnd = filtersState?.customTimeRange?.end || null;
 
   // Local search state for debounced search
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);

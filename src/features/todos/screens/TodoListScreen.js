@@ -10,13 +10,11 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import {
-  filterTodos,
-  searchTodos,
-  clearAllFilters,
   setLoadingMore,
   updatePaginationInfo,
   fetchTodos,
 } from '../slices/todosSlice';
+import { searchTodos, clearAllFilters } from '../../filters';
 import TodoItem from '../components/TodoItem';
 import EmptyState from '../../../components/EmptyState';
 import Button from '../../../components/Button';
@@ -32,8 +30,9 @@ const TodoListScreen = () => {
   const dispatch = useDispatch();
 
   const todosState = useSelector(state => state.todos);
-  const { todos, loading, error, sortBy, sortOrder, filterBy, searchQuery } =
-    todosState;
+  const filtersState = useSelector(state => state.filters);
+  const { todos, loading, error } = todosState;
+  const { sortBy, sortOrder, filterBy, searchQuery } = filtersState;
 
   // Safe defaults for pagination to prevent undefined errors
   const pagination = todosState.pagination || {
@@ -80,10 +79,10 @@ const TodoListScreen = () => {
     const filters = {
       searchQuery,
       filterBy,
-      dateFilter: todosState.dateFilter || 'all',
-      timeFilter: todosState.timeFilter || 'all',
-      customDateRange: todosState.customDateRange || { start: null, end: null },
-      customTimeRange: todosState.customTimeRange || { start: null, end: null },
+      dateFilter: filtersState.dateFilter || 'all',
+      timeFilter: filtersState.timeFilter || 'all',
+      customDateRange: filtersState.customDateRange || { start: null, end: null },
+      customTimeRange: filtersState.customTimeRange || { start: null, end: null },
       sortBy,
       sortOrder,
     };
@@ -93,10 +92,10 @@ const TodoListScreen = () => {
     todos,
     searchQuery,
     filterBy,
-    todosState.dateFilter,
-    todosState.timeFilter,
-    todosState.customDateRange,
-    todosState.customTimeRange,
+    filtersState.dateFilter,
+    filtersState.timeFilter,
+    filtersState.customDateRange,
+    filtersState.customTimeRange,
     sortBy,
     sortOrder,
   ]);
@@ -156,10 +155,10 @@ const TodoListScreen = () => {
     const summary = [];
     if (searchQuery) summary.push(`Search: "${searchQuery}"`);
     if (filterBy !== 'all') summary.push(`Status: ${filterBy}`);
-    if (todosState.dateFilter !== 'all')
-      summary.push(`Date: ${todosState.dateFilter}`);
-    if (todosState.timeFilter !== 'all')
-      summary.push(`Time: ${todosState.timeFilter}`);
+    if (filtersState.dateFilter !== 'all')
+      summary.push(`Date: ${filtersState.dateFilter}`);
+    if (filtersState.timeFilter !== 'all')
+      summary.push(`Time: ${filtersState.timeFilter}`);
     return summary.join(' • ');
   };
 

@@ -75,16 +75,6 @@ const initialState = {
   todos: [...DUMMY_TODOS],
   loading: false,
   error: null,
-  sortBy: 'createdAt', // 'name', 'dueDate', 'createdAt', 'time'
-  sortOrder: 'desc', // 'asc', 'desc'
-  filterBy: 'all', // 'all', 'completed', 'pending'
-  searchQuery: '',
-  // Enhanced filtering options
-  dateFilter: 'all', // 'all', 'today', 'thisWeek', 'thisMonth', 'overdue', 'custom'
-  timeFilter: 'all', // 'all', 'morning', 'afternoon', 'evening', 'night', 'custom'
-  customDateRange: { start: null, end: null },
-  customTimeRange: { start: null, end: null },
-  // Pagination state
   pagination: {
     currentPage: 0,
     pageSize: 20,
@@ -166,48 +156,6 @@ const todosSlice = createSlice({
       });
     },
 
-    filterTodos: (state, action) => {
-      state.filterBy = action.payload;
-    },
-
-    searchTodos: (state, action) => {
-      state.searchQuery = action.payload;
-    },
-
-    filterByDate: (state, action) => {
-      state.dateFilter = action.payload;
-    },
-
-    filterByTime: (state, action) => {
-      state.timeFilter = action.payload;
-    },
-
-    setCustomDateRange: (state, action) => {
-      state.customDateRange = action.payload;
-    },
-
-    setCustomTimeRange: (state, action) => {
-      state.customTimeRange = action.payload;
-    },
-
-    sortByTime: (state, action) => {
-      const { sortBy, sortOrder } = action.payload;
-      state.sortBy = sortBy;
-      state.sortOrder = sortOrder;
-    },
-
-    clearAllFilters: state => {
-      state.searchQuery = '';
-      state.dateFilter = 'all';
-      state.timeFilter = 'all';
-      state.customDateRange = { start: null, end: null };
-      state.customTimeRange = { start: null, end: null };
-      state.filterBy = 'all';
-      // Reset pagination when clearing filters
-      if (state.pagination) {
-        state.pagination.currentPage = 0;
-      }
-    },
 
     setPageSize: (state, action) => {
       if (!state.pagination) {
@@ -452,14 +400,6 @@ export const {
   deleteTodo,
   toggleTodo,
   sortTodos,
-  filterTodos,
-  searchTodos,
-  filterByDate,
-  filterByTime,
-  setCustomDateRange,
-  setCustomTimeRange,
-  sortByTime,
-  clearAllFilters,
   setPageSize,
   setCurrentPage,
   nextPage,
