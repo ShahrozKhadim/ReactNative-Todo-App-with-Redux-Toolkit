@@ -8,8 +8,6 @@ import {
 } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux';
-import { addTodo } from '../slices/todosSlice';
 import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import DatePicker from '../../../components/DatePicker';
@@ -21,7 +19,6 @@ import { colors, responsive } from '../../../utils';
  * Uses Formik for form handling and Yup for validation
  */
 const TodoForm = ({ todo, onSubmit, onCancel, isEditing = false }) => {
-  const dispatch = useDispatch();
 
   // Validation schema
   const validationSchema = Yup.object().shape({
@@ -52,7 +49,7 @@ const TodoForm = ({ todo, onSubmit, onCancel, isEditing = false }) => {
     time: todo?.time || '',
   };
 
-  const handleSubmit = (values, { setSubmitting, resetForm }) => {
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     const todoData = {
       name: values.name.trim(),
       description: values.description.trim(),
@@ -60,14 +57,18 @@ const TodoForm = ({ todo, onSubmit, onCancel, isEditing = false }) => {
       time: values.time || null,
     };
 
-    if (isEditing) {
-      onSubmit({ id: todo.id, updates: todoData });
-    } else {
-      dispatch(addTodo(todoData));
+    try {
+      if (isEditing) {
+        await onSubmit({ id: todo.id, updates: todoData });
+      } else {
+        await onSubmit(todoData);
+      }
+      setSubmitting(false);
+      resetForm();
+    } catch (error) {
+      setSubmitting(false);
+      // Error handling is done in the parent component
     }
-
-    setSubmitting(false);
-    resetForm();
   };
 
   return (
