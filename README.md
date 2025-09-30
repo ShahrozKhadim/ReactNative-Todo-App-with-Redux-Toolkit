@@ -13,7 +13,7 @@ A modern, feature-rich React Native Todo App with **CRUD operations**, **advance
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/ShahrozKhadim/React-Native-Todo-App-with-Redux-Toolkit.git
+   git clone [https://github.com/ShahrozKhadim/React-Native-Todo-App-with-Redux-Toolkit.git](https://github.com/ShahrozKhadim/ReactNative-Todo-App-with-Redux-Toolkit.git)
    cd ReactNativeTodoApp
    ```
 
