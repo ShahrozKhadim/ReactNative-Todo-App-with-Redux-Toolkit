@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // API Configuration
-const API_BASE_URL = 'https://jsonplaceholder.typicode.com'; // Using JSONPlaceholder for demo
-const API_TIMEOUT = 10000; // 10 seconds timeout
+const API_BASE_URL = 'https://jsonplaceholder.typicode.com';
+const API_TIMEOUT = 10000;
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    
+
     // Handle different error types
     if (error.response) {
       // Server responded with error status
@@ -86,7 +86,6 @@ const transformTodoForApi = (todo) => ({
 
 // API Service
 export const todoApi = {
-  // Fetch all todos
   fetchTodos: async () => {
     try {
       const response = await apiClient.get('/posts');
@@ -97,7 +96,6 @@ export const todoApi = {
     }
   },
 
-  // Fetch single todo by ID
   fetchTodoById: async (id) => {
     try {
       const response = await apiClient.get(`/posts/${id}`);
@@ -107,7 +105,6 @@ export const todoApi = {
     }
   },
 
-  // Create new todo
   createTodo: async (todoData) => {
     try {
       const transformedData = transformTodoForApi(todoData);
@@ -118,7 +115,6 @@ export const todoApi = {
     }
   },
 
-  // Update existing todo
   updateTodo: async (id, todoData) => {
     try {
       const transformedData = transformTodoForApi(todoData);
@@ -129,7 +125,6 @@ export const todoApi = {
     }
   },
 
-  // Delete todo
   deleteTodo: async (id) => {
     try {
       await apiClient.delete(`/posts/${id}`);
@@ -139,7 +134,6 @@ export const todoApi = {
     }
   },
 
-  // Search todos
   searchTodos: async (query) => {
     try {
       const response = await apiClient.get('/posts', {
@@ -152,7 +146,6 @@ export const todoApi = {
     }
   },
 
-  // Get todos with pagination
   fetchTodosPaginated: async (page = 1, limit = 20) => {
     try {
       const response = await apiClient.get('/posts', {
@@ -163,7 +156,7 @@ export const todoApi = {
       });
       const todos = response.data.map(transformTodo);
       const totalCount = response.headers['x-total-count'] || response.data.length;
-      
+
       return {
         data: todos,
         pagination: {
@@ -179,6 +172,3 @@ export const todoApi = {
     }
   },
 };
-
-// Export default
-export default todoApi;

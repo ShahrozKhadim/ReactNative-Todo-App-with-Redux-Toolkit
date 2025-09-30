@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   View,
 } from 'react-native';
-import { colors, responsive, Shadows } from '../utils';
+import { colors, responsive } from '../utils';
 
 /**
  * Reusable Button component

@@ -12,7 +12,6 @@ import PickerModal from './PickerModal';
 
 /**
  * TimePicker component for selecting time
- * Uses @react-native-community/datetimepicker for native time selection
  */
 const TimePicker = ({
   label,
@@ -29,16 +28,12 @@ const TimePicker = ({
   const [selectedTime, setSelectedTime] = useState(null);
 
   const handleTimeChange = (event, selectedTime) => {
-    // Don't close picker immediately - let user confirm with Done/Cancel
-    // Only close on Android when user dismisses
     if (Platform.OS === 'android' && event.type === 'dismissed') {
       setShowPicker(false);
       return;
     }
 
-    // Store the selected time but don't apply it yet
     if (selectedTime) {
-      // We'll apply the change when user taps Done
       setSelectedTime(selectedTime);
     }
   };

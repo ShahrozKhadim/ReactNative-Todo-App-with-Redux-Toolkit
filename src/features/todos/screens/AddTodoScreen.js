@@ -5,7 +5,6 @@ import TodoForm from '../components/TodoForm';
 
 /**
  * AddTodoScreen - Screen for creating new todos
- * Uses the shared TodoForm component
  */
 const AddTodoScreen = () => {
   const navigation = useNavigation();

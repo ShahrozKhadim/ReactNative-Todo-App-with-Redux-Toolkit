@@ -12,7 +12,6 @@ import { useOptimisticTodos } from '../../../hooks/useOptimisticTodos';
 
 /**
  * TodoItem component for displaying individual todo items
- * Handles toggle completion and delete actions
  */
 const TodoItem = ({ todo, onPress }) => {
   const { toggleTodoOptimistic, deleteTodoOptimistic } = useOptimisticTodos();
@@ -21,7 +20,6 @@ const TodoItem = ({ todo, onPress }) => {
     try {
       await toggleTodoOptimistic(todo.id);
       } catch (error) {
-        // Silent error handling
       }
   };
 

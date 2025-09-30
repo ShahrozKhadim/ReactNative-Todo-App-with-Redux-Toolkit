@@ -10,7 +10,6 @@ import { colors, responsive } from '../../../utils';
 
 /**
  * TodoDetailScreen - Screen for viewing and editing todo details
- * Allows editing and deletion of individual todos
  */
 const TodoDetailScreen = () => {
   const navigation = useNavigation();
@@ -18,7 +17,6 @@ const TodoDetailScreen = () => {
   const { updateTodoOptimistic, deleteTodoOptimistic, toggleTodoOptimistic } =
     useOptimisticTodos();
 
-  // All hooks must be called in the same order every time
   const todos = useSelector(state => state.todos.todos);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -35,7 +33,6 @@ const TodoDetailScreen = () => {
       setIsEditing(false);
 
       } catch (error) {
-        // Silent error handling - no user alerts
       }
   };
 
@@ -54,7 +51,6 @@ const TodoDetailScreen = () => {
               await deleteTodoOptimistic(currentTodo.id);
               navigation.goBack();
                 } catch (error) {
-                  // Silent error handling - no user alerts
                 }
         },
       },
@@ -65,7 +61,6 @@ const TodoDetailScreen = () => {
     try {
       await toggleTodoOptimistic(currentTodo.id);
       } catch (error) {
-        // Silent error handling
       }
   };
 

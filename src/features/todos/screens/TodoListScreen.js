@@ -9,7 +9,14 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { filterTodos, searchTodos, clearAllFilters, setLoadingMore, updatePaginationInfo, fetchTodos } from '../slices/todosSlice';
+import {
+  filterTodos,
+  searchTodos,
+  clearAllFilters,
+  setLoadingMore,
+  updatePaginationInfo,
+  fetchTodos,
+} from '../slices/todosSlice';
 import TodoItem from '../components/TodoItem';
 import EmptyState from '../../../components/EmptyState';
 import Button from '../../../components/Button';
@@ -19,14 +26,14 @@ import { applyAllFilters } from '../../../utils';
 
 /**
  * TodoListScreen - Main screen displaying all todos
- * Handles sorting, filtering, searching, and CRUD operations
  */
 const TodoListScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const todosState = useSelector((state) => state.todos);
-  const { todos, loading, error, sortBy, sortOrder, filterBy, searchQuery } = todosState;
+  const todosState = useSelector(state => state.todos);
+  const { todos, loading, error, sortBy, sortOrder, filterBy, searchQuery } =
+    todosState;
 
   // Safe defaults for pagination to prevent undefined errors
   const pagination = todosState.pagination || {
@@ -49,11 +56,13 @@ const TodoListScreen = () => {
   // Initialize pagination state if not present (migration)
   useEffect(() => {
     if (!todosState.pagination) {
-      dispatch(updatePaginationInfo({
-        totalItems: todos.length,
-        hasNextPage: todos.length > 20,
-        hasPreviousPage: false
-      }));
+      dispatch(
+        updatePaginationInfo({
+          totalItems: todos.length,
+          hasNextPage: todos.length > 20,
+          hasPreviousPage: false,
+        }),
+      );
     }
   }, [todosState.pagination, todos.length, dispatch]);
 
@@ -76,7 +85,7 @@ const TodoListScreen = () => {
       customDateRange: todosState.customDateRange || { start: null, end: null },
       customTimeRange: todosState.customTimeRange || { start: null, end: null },
       sortBy,
-      sortOrder
+      sortOrder,
     };
 
     return applyAllFilters(todos, filters);
@@ -89,7 +98,7 @@ const TodoListScreen = () => {
     todosState.customDateRange,
     todosState.customTimeRange,
     sortBy,
-    sortOrder
+    sortOrder,
   ]);
 
   // Get paginated todos based on current page and page size
@@ -106,11 +115,13 @@ const TodoListScreen = () => {
     const hasNextPage = pagination.currentPage < totalPages - 1;
     const hasPreviousPage = pagination.currentPage > 0;
 
-    dispatch(updatePaginationInfo({
-      totalItems,
-      hasNextPage,
-      hasPreviousPage
-    }));
+    dispatch(
+      updatePaginationInfo({
+        totalItems,
+        hasNextPage,
+        hasPreviousPage,
+      }),
+    );
   }, [allFilteredTodos, pagination.currentPage, pagination.pageSize, dispatch]);
 
   const handleRefresh = () => {
@@ -129,7 +140,12 @@ const TodoListScreen = () => {
         dispatch({ type: 'todos/setPageSize', payload: newPageSize });
       }, 500);
     }
-  }, [pagination.isLoadingMore, pagination.hasNextPage, pagination.pageSize, dispatch]);
+  }, [
+    pagination.isLoadingMore,
+    pagination.hasNextPage,
+    pagination.pageSize,
+    dispatch,
+  ]);
 
   const handleClearAllFilters = () => {
     dispatch(clearAllFilters());
@@ -140,41 +156,41 @@ const TodoListScreen = () => {
     const summary = [];
     if (searchQuery) summary.push(`Search: "${searchQuery}"`);
     if (filterBy !== 'all') summary.push(`Status: ${filterBy}`);
-    if (todosState.dateFilter !== 'all') summary.push(`Date: ${todosState.dateFilter}`);
-    if (todosState.timeFilter !== 'all') summary.push(`Time: ${todosState.timeFilter}`);
+    if (todosState.dateFilter !== 'all')
+      summary.push(`Date: ${todosState.dateFilter}`);
+    if (todosState.timeFilter !== 'all')
+      summary.push(`Time: ${todosState.timeFilter}`);
     return summary.join(' • ');
   };
 
-  const handleTodoPress = useCallback((todo) => {
-    navigation.navigate('TodoDetail', { todo });
-  }, [navigation]);
+  const handleTodoPress = useCallback(
+    todo => {
+      navigation.navigate('TodoDetail', { todo });
+    },
+    [navigation],
+  );
 
   const handleAddTodo = () => {
     navigation.navigate('AddTodo');
   };
 
-  // Optimized renderTodoItem with useCallback
-  const renderTodoItem = useCallback(({ item }) => (
-    <TodoItem
-      todo={item}
-      onPress={() => handleTodoPress(item)}
-    />
-  ), [handleTodoPress]);
+  const renderTodoItem = useCallback(
+    ({ item }) => (
+      <TodoItem todo={item} onPress={() => handleTodoPress(item)} />
+    ),
+    [handleTodoPress],
+  );
 
-  // Optimized keyExtractor
-  const keyExtractor = useCallback((item) => item.id, []);
+  const keyExtractor = useCallback(item => item.id, []);
 
   const renderEmptyState = () => {
     if (loading) {
       return (
-        <EmptyState
-          title="Loading..."
-          description="Fetching your todos"
-        />
+        <EmptyState title="Loading..." description="Fetching your todos" />
       );
     }
 
-/*    if (error) {
+    /*    if (error) {
       return (
         <EmptyState
           title="Error"
@@ -264,22 +280,16 @@ const TodoListScreen = () => {
         // Pagination
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.1}
-        // Performance optimizations for large datasets
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         updateCellsBatchingPeriod={50}
         initialNumToRender={20}
         windowSize={10}
         getItemLayout={(data, index) => ({
-          length: 80, // Approximate height of TodoItem
+          length: 80,
           offset: 80 * index,
           index,
         })}
-        // Memory optimizations
-        legacyImplementation={false}
-        disableVirtualization={false}
-        // Scroll performance
-        scrollEventThrottle={16}
       />
 
       <View style={styles.fabContainer}>
@@ -372,7 +382,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: responsive.padding.md,
-    backgroundColor: colors.gray["100"],
+    backgroundColor: colors.gray['100'],
     borderRadius: responsive.borderRadius.md,
   },
 
@@ -389,7 +399,7 @@ const styles = StyleSheet.create({
   },
   addText: {
     fontSize: responsive.fontSize.xl,
-  }
+  },
 });
 
 export default TodoListScreen;

@@ -11,7 +11,6 @@ import { colors, responsive } from '../utils';
 
 /**
  * PickerModal - Shared modal component for date/time pickers
- * Provides consistent modal UI with Done/Cancel buttons
  */
 const PickerModal = ({
   visible,

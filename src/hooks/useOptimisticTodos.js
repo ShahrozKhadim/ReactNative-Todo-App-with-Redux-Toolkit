@@ -10,7 +10,6 @@ import {
 
 /**
  * Custom hook for optimistic todo operations
- * Provides immediate UI updates with rollback capability
  */
 export const useOptimisticTodos = () => {
   const dispatch = useDispatch();

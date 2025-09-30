@@ -67,7 +67,6 @@ const TodoForm = ({ todo, onSubmit, onCancel, isEditing = false }) => {
       resetForm();
     } catch (error) {
       setSubmitting(false);
-      // Error handling is done in the parent component
     }
   };
 

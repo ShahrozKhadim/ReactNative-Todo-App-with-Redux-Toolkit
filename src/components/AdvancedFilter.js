@@ -21,7 +21,14 @@ import {
 import Button from './Button';
 import DatePicker from './DatePicker';
 import TimePicker from './TimePicker';
-import { colors, responsive } from '../utils';
+import { 
+  colors, 
+  responsive,
+  DATE_FILTER_OPTIONS,
+  TIME_FILTER_OPTIONS,
+  SORT_OPTIONS,
+  SORT_ORDER_OPTIONS,
+} from '../utils';
 
 /**
  * AdvancedFilter - Comprehensive filter component for todos
@@ -45,35 +52,6 @@ const AdvancedFilter = ({ visible, onClose }) => {
   // Local search state for debounced search
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
-  const dateFilterOptions = [
-    { value: 'all', label: 'All Dates' },
-    { value: 'today', label: 'Today' },
-    { value: 'thisWeek', label: 'This Week' },
-    { value: 'thisMonth', label: 'This Month' },
-    { value: 'overdue', label: 'Overdue' },
-    { value: 'custom', label: 'Custom Range' },
-  ];
-
-  const timeFilterOptions = [
-    { value: 'all', label: 'All Times' },
-    { value: 'morning', label: 'Morning (6AM-12PM)' },
-    { value: 'afternoon', label: 'Afternoon (12PM-6PM)' },
-    { value: 'evening', label: 'Evening (6PM-12AM)' },
-    { value: 'night', label: 'Night (12AM-6AM)' },
-    { value: 'custom', label: 'Custom Time' },
-  ];
-
-  const sortOptions = [
-    { value: 'name', label: 'Name' },
-    { value: 'dueDate', label: 'Due Date' },
-    { value: 'createdAt', label: 'Created Date' },
-    { value: 'time', label: 'Time' },
-  ];
-
-  const sortOrderOptions = [
-    { value: 'asc', label: 'Ascending' },
-    { value: 'desc', label: 'Descending' },
-  ];
 
   const handleApplyFilters = () => {
     onClose();
@@ -194,7 +172,7 @@ const AdvancedFilter = ({ visible, onClose }) => {
           </View>
 
           {/* Date Filter Section */}
-          {renderFilterSection('Date Filter', dateFilterOptions, dateFilter, handleDateFilterChange)}
+          {renderFilterSection('Date Filter', DATE_FILTER_OPTIONS, dateFilter, handleDateFilterChange)}
 
           {dateFilter === 'custom' && (
             <View style={styles.customRangeContainer}>
@@ -221,7 +199,7 @@ const AdvancedFilter = ({ visible, onClose }) => {
           )}
 
           {/* Time Filter Section */}
-          {renderFilterSection('Time Filter', timeFilterOptions, timeFilter, handleTimeFilterChange)}
+          {renderFilterSection('Time Filter', TIME_FILTER_OPTIONS, timeFilter, handleTimeFilterChange)}
 
           {timeFilter === 'custom' && (
             <View style={styles.customRangeContainer}>
@@ -252,7 +230,7 @@ const AdvancedFilter = ({ visible, onClose }) => {
             <Text style={styles.sectionTitle}>Sort By</Text>
             <View style={styles.sortContainer}>
               <View style={styles.sortByContainer}>
-                {sortOptions.map((option) => (
+                {SORT_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     style={[
@@ -274,7 +252,7 @@ const AdvancedFilter = ({ visible, onClose }) => {
               </View>
 
               <View style={styles.sortOrderContainer}>
-                {sortOrderOptions.map((option) => (
+                {SORT_ORDER_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     style={[

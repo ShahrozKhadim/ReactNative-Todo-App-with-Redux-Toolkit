@@ -13,7 +13,6 @@ import PickerModal from './PickerModal';
 
 /**
  * DatePicker component for selecting dates
- * Uses @react-native-community/datetimepicker for native date selection
  */
 const DatePicker = ({
   label,
